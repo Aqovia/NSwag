@@ -8,10 +8,7 @@ platform: Any CPU
 before_build:
 - cmd: >-
     npm --prefix "src\NSwag.Integration.TypeScriptWeb" install "src\NSwag.Integration.TypeScriptWeb"
-
-
     nuget restore src\NSwag.sln -NoCache
-
     dotnet restore src\NSwag.sln --no-cache
 build:
   project: src\NSwag.sln
@@ -19,7 +16,6 @@ build:
 after_build:
 - cmd: >-
     nuget pack src/NSwag.MSBuild/NSwag.MSBuild.nuspec
-
     nuget pack src/NSwagStudio.Chocolatey/NSwagStudio.nuspec
 test:
   categories:
@@ -33,11 +29,4 @@ artifacts:
   name: NSwag
 - path: src\NSwagStudio\Properties\AssemblyInfo.cs
 - path: src/NSwag**/*.nupkg
-deploy:
-- provider: NuGet
-  server: https://www.myget.org/F/nswag-ci/api/v2/package
-  api_key:
-    secure: ***
-  skip_symbols: true
-  on:
-    branch: Fixed_.Net_Core_Build
+  
