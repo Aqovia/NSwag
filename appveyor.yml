@@ -5,9 +5,16 @@ branches:
 image: Visual Studio 2017 Preview
 configuration: Release
 platform: Any CPU
+before_build:
+- cmd: >-    
+    nuget restore src\NSwag.sln -NoCache  
 build:
   project: src\NSwag.sln
   verbosity: minimal
+after_build:
+- cmd: >-
+    nuget pack src/NSwag.MSBuild/NSwag.MSBuild.nuspec
+    nuget pack src/NSwagStudio.Chocolatey/NSwagStudio.nuspec
 test:
   categories:
     except:
