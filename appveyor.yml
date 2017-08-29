@@ -1,29 +1,24 @@
-version: '{build}'
 branches:
   except:
   - release
-image: Visual Studio 2017 Preview
-configuration: Release
+image: Visual Studio 2017
+clone_depth: 1
 platform: Any CPU
 before_build:
-- cmd: >-    
-    nuget restore src\NSwag.sln -NoCache  
+- cmd: >-
+    nuget restore src\NSwag.sln -NoCache
+    dotnet restore src\NSwag.sln -NoCache
 build:
   project: src\NSwag.sln
+  publish_nuget: true
+  publish_nuget_symbols: true
+  include_nuget_references: true
   verbosity: minimal
-after_build:
-- cmd: >-
-    nuget pack src/NSwag.MSBuild/NSwag.MSBuild.nuspec
-    nuget pack src/NSwagStudio.Chocolatey/NSwagStudio.nuspec
 test:
   categories:
     except:
     - integration
-artifacts:
-- path: '*.nupkg'
-- path: src\NSwagStudio.Installer\bin\Release\NSwagStudio.msi
-  name: NSwagStudio.msi
-- path: src\NSwagStudio\bin\Release
-  name: NSwag
-- path: src\NSwagStudio\Properties\AssemblyInfo.cs
-- path: src/NSwag**/*.nupkg
+deploy_script:
+- ps: "if ($env:APPVEYOR_REPO_BRANCH -eq \"Fixed_.Net_Core_Build\")\n{\n    $repo = \"https://api.bintray.com/nuget/aqovia/NuGetOSS\"\n\n    nuget sources Add -Name Bintray -Source $repo -UserName $env:BinTrayUserName -Password $env:BinTrayApiKey\n    nuget setapikey \"$($env:BinTrayUserName):$($env:BinTrayApiKey)\" -Source Bintray\n\n    $packages = Get-ChildItem -Recurse -Filter *.nupkg $env:TEMP \n    ForEach ($package in $packages)\n    {\n        nuget push $package.FullName -Source $repo\n    }\n}"
+
+  
