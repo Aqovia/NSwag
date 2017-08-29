@@ -40,4 +40,4 @@ deploy:
     secure: ***
   skip_symbols: true
   on:
-    branch: master
+    branch: Fixed_.Net_Core_Build
